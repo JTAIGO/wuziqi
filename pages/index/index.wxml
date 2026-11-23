@@ -1,0 +1,94 @@
+<view class="page">
+
+  <!-- 竹林背景图（绝对定位铺满，小程序里背景图最可靠的做法） -->
+  <image class="bg-image" src="/assets/bamboo-bg.png" mode="aspectFill"></image>
+
+  <!-- 自定义导航栏（标题，融入竹林背景） -->
+  <view class="nav-bar" style="padding-top:{{statusBarHeight}}px;">
+    <text class="nav-title">五子棋</text>
+  </view>
+
+  <!-- 开局设置菜单（弹窗形式，打开时隐藏棋盘避免同层渲染遮挡） -->
+  <view class="menu-mask" wx:if="{{showMenu}}" bindtap="toggleMenu">
+    <view class="menu-dialog" catchtap="noop">
+      <view class="menu-head">
+        <text class="menu-title">对局设置</text>
+        <view class="menu-x" bindtap="toggleMenu">×</view>
+      </view>
+
+      <view class="menu-group">
+        <text class="menu-label">对战模式</text>
+        <view class="menu-options">
+          <view class="menu-opt {{mode === 'pvp' ? 'on' : ''}}" data-mode="pvp" bindtap="selectMode">双人对战</view>
+          <view class="menu-opt {{mode === 'pve' ? 'on' : ''}}" data-mode="pve" bindtap="selectMode">人机对战</view>
+        </view>
+      </view>
+
+      <view class="menu-group">
+        <text class="menu-label">规则</text>
+        <view class="menu-options">
+          <view class="menu-opt {{rule === 'free' ? 'on' : ''}}" data-rule="free" bindtap="selectRule">无禁手</view>
+          <view class="menu-opt {{rule === 'standard' ? 'on' : ''}}" data-rule="standard" bindtap="selectRule">标准禁手</view>
+        </view>
+      </view>
+
+      <view class="menu-group" wx:if="{{mode === 'pve'}}">
+        <text class="menu-label">AI 难度</text>
+        <view class="menu-options">
+          <view class="menu-opt {{level === 'easy' ? 'on' : ''}}" data-level="easy" bindtap="selectLevel">简单</view>
+          <view class="menu-opt {{level === 'normal' ? 'on' : ''}}" data-level="normal" bindtap="selectLevel">普通</view>
+          <view class="menu-opt {{level === 'hard' ? 'on' : ''}}" data-level="hard" bindtap="selectLevel">困难</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 顶部对局信息 -->
+  <view class="scoreboard">
+    <view class="player {{current === 1 && !winner && !isDraw ? 'active' : ''}}">
+      <view class="stone stone-black"></view>
+      <view class="player-meta">
+        <text class="player-name">{{mode === 'pve' ? 'AI' : '黑方'}}</text>
+        <text class="player-time">{{time1}}</text>
+      </view>
+    </view>
+
+    <view class="center-info">
+      <text class="move-num">{{moveCount}}</text>
+      <text class="move-unit">手</text>
+    </view>
+
+    <view class="player player-right {{current === 2 && !winner && !isDraw ? 'active' : ''}}">
+      <view class="player-meta player-meta-right">
+        <text class="player-name">{{mode === 'pve' ? '你' : '白方'}}</text>
+        <text class="player-time">{{time2}}</text>
+      </view>
+      <view class="stone stone-white"></view>
+    </view>
+  </view>
+
+  <!-- 棋盘（终局结果直接绘制在画布上；打开设置弹窗时隐藏 canvas，避免同层 canvas 盖住弹窗） -->
+  <view class="board-area">
+    <view class="board-frame" wx:if="{{!showMenu}}" style="width:{{canvasSize}}px;height:{{canvasSize}}px;">
+      <canvas type="2d" id="board" class="board" bindtouchstart="onBoardTap"></canvas>
+    </view>
+
+    <!-- 禁手提示 -->
+    <view class="forbid-hint" wx:if="{{forbidHint}}">
+      <text>{{forbidHint}}</text>
+    </view>
+
+    <!-- AI 思考中提示 -->
+    <view class="ai-hint" wx:if="{{aiThinking && mode === 'pve'}}">
+      <text>AI 思考中…</text>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="toolbar">
+    <view class="btn btn-ghost {{canUndo ? '' : 'is-disabled'}}" bindtap="undo">{{winner || isDraw ? '悔棋复盘' : '悔棋'}}</view>
+    <view class="btn btn-primary" bindtap="restart">{{winner || isDraw ? '再来一局' : '重新开始'}}</view>
+    <view class="btn btn-ghost btn-menu" bindtap="toggleMenu">设置</view>
+  </view>
+
+</view>

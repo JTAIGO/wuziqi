@@ -1,0 +1,14 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#EDF2EC",
+    "navigationBarTitleText": "五子棋",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#EDF2EC",
+    "backgroundTextStyle": "dark"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}
